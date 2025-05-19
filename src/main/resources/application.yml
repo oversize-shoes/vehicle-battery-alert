@@ -1,0 +1,184 @@
+server:
+  port: 8000
+
+#spring:
+#  shardingsphere:
+#    props:
+#      sql-show: true
+#      check-table-metadata-enabled: true
+#
+#    datasource:
+#      names: vehicle_0, vehicle_1
+#      vehicle_0:
+#        type: com.zaxxer.hikari.HikariDataSource
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        jdbc-url: jdbc:mysql://localhost:3309/vehicle_0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#        username: root
+#        password: 123456
+#      vehicle_1:
+#        type: com.zaxxer.hikari.HikariDataSource
+#        driver-class-name: com.mysql.cj.jdbc.Driver
+#        jdbc-url: jdbc:mysql://localhost:3309/vehicle_1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+#        username: root
+#        password: 123456
+#
+#    rules:
+#      sharding:
+#        tables:
+#          vehicle:
+#            actual-data-nodes: vehicle0.vehicle_${0..3},vehicle1.vehicle_${0..3}
+#            table-strategy:
+#              standard:
+#                sharding-column: vin
+#                sharding-algorithm-name: vehicle-inline
+#            key-generate-strategy:
+#              column: id
+#              key-generator-name: snowflake
+#
+#          battery_signal:
+#            actual-data-nodes: vehicle0.battery_signal_202505_${0..3},vehicle1.battery_signal_202505_${0..3}
+#            table-strategy:
+#              standard:
+#                sharding-column: vin
+#                sharding-algorithm-name: signal-inline
+#            key-generate-strategy:
+#              column: id
+#              key-generator-name: snowflake
+#
+#          battery_alert:
+#            actual-data-nodes: vehicle0.battery_alert_202505_${0..3},vehicle1.battery_alert_202505_${0..3}
+#            table-strategy:
+#              standard:
+#                sharding-column: vin
+#                sharding-algorithm-name: alert-inline
+#            key-generate-strategy:
+#              column: id
+#              key-generator-name: snowflake
+#
+#        default-database-strategy:
+#          standard:
+#            sharding-column: vin
+#            sharding-algorithm-name: db-inline
+#
+#        sharding-algorithms:
+#          db-inline:
+#            type: INLINE
+#            props:
+#              algorithm-expression: vehicle_${vin % 2}
+#          vehicle-inline:
+#            type: INLINE
+#            props:
+#              algorithm-expression: vehicle_${vin % 4}
+#          signal-inline:
+#            type: INLINE
+#            props:
+#              algorithm-expression: battery_signal_202505_${vin % 4}
+#          alert-inline:
+#            type: INLINE
+#            props:
+#              algorithm-expression: battery_alert_202505_${vin % 4}
+#
+#        key-generators:
+#          snowflake:
+#            type: SNOWFLAKE
+#            props:
+#              worker-id: 1
+
+spring:
+  shardingsphere:
+    props:
+      sql-show: true
+      check-table-metadata-enabled: true
+
+    datasource:
+      names: vehicle_0
+      vehicle_0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3309/vehicle_0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: 123456
+
+    rules:
+      sharding:
+        tables:
+          vehicle:
+            actual-data-nodes: vehicle_0.vehicle_${0..3}
+            table-strategy:
+              standard:
+                sharding-column: vin
+                sharding-algorithm-name: vehicle-inline
+            key-generate-strategy:
+              column: id
+              key-generator-name: snowflake
+
+          battery_signal:
+            actual-data-nodes: vehicle_0.battery_signal_202505_${0..3}
+            table-strategy:
+              standard:
+                sharding-column: vin
+                sharding-algorithm-name: signal-inline
+            key-generate-strategy:
+              column: id
+              key-generator-name: snowflake
+
+          battery_alert:
+            actual-data-nodes: vehicle_0.battery_alert_202505_${0..3}
+            table-strategy:
+              standard:
+                sharding-column: vin
+                sharding-algorithm-name: alert-inline
+            key-generate-strategy:
+              column: id
+              key-generator-name: snowflake
+
+        default-database-strategy:
+          none:
+
+        sharding-algorithms:
+          vehicle-inline:
+            type: INLINE
+            props:
+              algorithm-expression: vehicle_${vin % 4}
+
+          signal-inline:
+            type: INLINE
+            props:
+              algorithm-expression: battery_signal_202505_${vin % 4}
+
+          alert-inline:
+            type: INLINE
+            props:
+              algorithm-expression: battery_alert_202505_${vin % 4}
+
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+            props:
+              worker-id: 1
+
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 3000
+    database: 0
+
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: battery-warning-producer-group
+    send-message-timeout: 3000
+  consumer:
+    group: battery-warning-consumer-group
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+mq:
+  topic:
+    alert-process: battery-alert-process-topic
