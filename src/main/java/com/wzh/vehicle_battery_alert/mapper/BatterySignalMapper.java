@@ -25,6 +25,6 @@ public interface BatterySignalMapper {
     @Delete("DELETE FROM battery_signal WHERE vin = #{id}")
     void deleteById(Long id);
 
-    @Update("UPDATE battery_signal SET vin=#{vin}, signal_type=#{signalType}, signal_value=#{signalValue}, report_time=#{reportTime}, created_at=#{createdAt}, version = version + 1 WHERE vin = #{id} AND version = #{version}")
+    @Update("UPDATE battery_signal SET vin=#{vin}, signal_type=#{signalType}, signal_value=#{signalValue}, report_time=#{reportTime}, created_at=#{createdAt}, version = version + 1 WHERE vin = #{vin} AND version = #{version}")
     int updateWithVersion(BatterySignal signal);
 }
