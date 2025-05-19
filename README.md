@@ -19,7 +19,7 @@
 #### 2.2 车辆信息模块（Vehicle）
 
 - 存储车辆基本信息（VIN、电池类型）
-- 使用 ShardingSphere 分表（如 `vehicle_0` ~ `vehicle_7`）
+- 使用 ShardingSphere 分表（如 `vehicle_0` ~ `vehicle_3`）
 
 #### 2.3 预警规则模块（AlertRule）
 
